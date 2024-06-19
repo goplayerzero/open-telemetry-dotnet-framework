@@ -30,9 +30,9 @@ namespace AspdotNetFramework
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            var serviceName = "p0-dotnet-framework";
+            var serviceName = "My Dataset Name";
             var endPoint = "https://sdk.playerzero.app/otlp";
-            var headers = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true";
+            var headers = "Authorization=Bearer <api token>,x-pzprod=false";
 
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .AddAspNetInstrumentation()
