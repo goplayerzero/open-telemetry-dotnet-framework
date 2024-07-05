@@ -110,3 +110,12 @@ public class WebApiApplication : HttpApplication
 }
 ```
 
+
+## Configure Activity TraceState
+```
+var currentActivity = Activity.Current;            
+if (currentActivity != null)
+{
+    currentActivity.TraceStateString = $"userid=your_user_id";
+}
+```
