@@ -34,7 +34,6 @@ namespace AspdotNet481
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .SetResourceBuilder(resourceBuilder)
                 .AddAspNetInstrumentation()
-                .AddConsoleExporter()
                 .AddSource(serviceName)
                 .AddOtlpExporter(options =>
                 {
@@ -47,7 +46,6 @@ namespace AspdotNet481
             _meterProvider = Sdk.CreateMeterProviderBuilder()
                 .SetResourceBuilder(resourceBuilder)
                 .AddMeter(serviceName)
-                .AddConsoleExporter()
                 .AddOtlpExporter(options =>
                 {
                     options.Endpoint = new Uri(endPoint + "/v1/metrics");
@@ -61,7 +59,6 @@ namespace AspdotNet481
                 builder.AddOpenTelemetry(logging =>
                 {
                     logging.SetResourceBuilder(resourceBuilder);
-                    logging.AddConsoleExporter();
                     logging.AddOtlpExporter(options =>
                     {
                         options.Endpoint = new Uri(endPoint + "/v1/logs");

@@ -1,7 +1,5 @@
-# open-telemetry-dotnet-framework
-Demonstration of Open Telemetry Instrumentation with .NET Framework
+# Demonstration of Open Telemetry Instrumentation with .NET Framework 4.6.2
 
-# .NET Framework instrumentation configuration
 ## ASP.NET Initialization
 Initialization for ASP.NET is a little different than for ASP.NET Core.
 
@@ -86,6 +84,9 @@ public class WebApiApplication : HttpApplication
             builder.AddOpenTelemetry(logging =>
             {
                 logging.AddConsoleExporter();
+                logging.SetResourceBuilder(
+                    ResourceBuilder.CreateDefault()
+                        .AddService(serviceName: serviceName, serviceVersion: "1.0.0"));
                 logging.AddOtlpExporter(options =>
                 {
                     options.Endpoint = new Uri(endPoint + "/v1/logs");
