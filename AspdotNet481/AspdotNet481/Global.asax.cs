@@ -8,6 +8,8 @@ using OpenTelemetry.Logs;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Exporter;
+using System.Diagnostics;
+using System.Web;
 
 namespace AspdotNet481
 {
@@ -22,11 +24,11 @@ namespace AspdotNet481
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            var serviceName = "My Dataset Name";
+            var serviceName = "p0-aspdotnet-4.8.1";
             var serviceVersion = "1.0.0";
 
             var endPoint = "https://sdk.playerzero.app/otlp";
-            var headers = "Authorization=Bearer <api_token>,x-pzprod=false";
+            var headers = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true";
 
             var resourceBuilder = ResourceBuilder.CreateDefault()
                .AddService(serviceName: serviceName, serviceVersion: serviceVersion);
@@ -76,5 +78,30 @@ namespace AspdotNet481
             _meterProvider?.Dispose();
             _loggerFactory?.Dispose();
         }
+
+        protected void Application_BeginRequest()
+        {
+            HttpCookie traceIdCookie = HttpContext.Current.Request.Cookies["pz-traceid"];
+            if (traceIdCookie != null)
+            {
+                string traceId = traceIdCookie.Value;
+
+                // Convert the string traceId to ActivityTraceId
+                ActivityTraceId pzTraceId = ActivityTraceId.CreateFromString(traceId.AsSpan());
+
+                // Get the current activity
+                var currentActivity = Activity.Current;
+                if (currentActivity != null)
+                {
+                    // Set the parent id using the converted ActivityTraceId
+                    currentActivity.SetParentId(pzTraceId, currentActivity.SpanId, currentActivity.ActivityTraceFlags);
+                }               
+            }
+            else
+            {
+                Debug.WriteLine("Trace ID cookie not found.");
+            }
+        }
+
     }
 }

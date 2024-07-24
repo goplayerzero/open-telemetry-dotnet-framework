@@ -1,6 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Web.Mvc;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Exporter;
+using System;
 
 namespace AspdotNet481.Controllers
 {
@@ -10,9 +16,27 @@ namespace AspdotNet481.Controllers
 
         public HomeController()
         {
+            var serviceName = "p0-aspdotnet-4.8.1";
+            var serviceVersion = "1.0.0";
+
+            var endPoint = "https://sdk.playerzero.app/otlp";
+            var headers = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true";
+
+            var resourceBuilder = ResourceBuilder.CreateDefault()
+               .AddService(serviceName: serviceName, serviceVersion: serviceVersion);
+
             _loggerFactory = LoggerFactory.Create(builder =>
             {
-                
+                builder.AddOpenTelemetry(logging =>
+                {
+                    logging.SetResourceBuilder(resourceBuilder);
+                    logging.AddOtlpExporter(options =>
+                    {
+                        options.Endpoint = new Uri(endPoint + "/v1/logs");
+                        options.Headers = headers;
+                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    });
+                });
             });
         }
 
@@ -40,15 +64,15 @@ namespace AspdotNet481.Controllers
                 }
                 else
                 {
-                    _logger.LogWarning("CurrentActivity is null, trace state string not set.");
+                    _logger.LogError("CurrentActivity is null, trace state string not set.");
                 }
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "About");
             }
             else
             {
                 _logger.LogError("Login Failed!");
-                _logger.LogError("Login Failed for user: {username}", username);
+                _logger.LogError("Login Failed for user: ${username}", username);
             }
 
             return RedirectToAction("Index", "Home");
