@@ -11,15 +11,30 @@
             src="https://go.playerzero.app/record/666af2fef6b93a24518cf726"
             async crossorigin></script>
     <script>
-        const userId = "123456789";        const metadata = {
-            name: "asp.net user",            email: "asp@dotnet.fake",
+        const userId = "123456789";
+        const metadata = {
+            name: "asp.net user",
+            email: "asp@dotnet.fake",
             group: "4.8.1"
-        };        const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;        if (window.playerzero) {            // PlayerZero has loaded            window.playerzero.identify(userId, metadata);            window.playerzero.onTraceChange(setCookie);
+        };
+        const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;
+
+        if (window.playerzero) {
+            // PlayerZero has loaded
+            window.playerzero.identify(userId, metadata);
+            window.playerzero.onTraceChange(setCookie);
             console.log("PlayerZero has loaded");
-        } else {            // PlayerZero has not loaded, so we'll wait for the ready event            window.addEventListener(              "playerzero_ready",              () => {
-                  window.playerzero.identify(userId, metadata);                  window.playerzero.onTraceChange(setCookie);
+        } else {
+            // PlayerZero has not loaded, so we'll wait for the ready event
+            window.addEventListener(
+              "playerzero_ready",
+              () => {
+                  window.playerzero.identify(userId, metadata);
+                  window.playerzero.onTraceChange(setCookie);
                   console.log("PlayerZero has loaded playerzero_ready");
-              },              { once: true }            );
+              },
+              { once: true }
+            );
         }
     </script>
 </head>
