@@ -110,9 +110,9 @@ End Class
 
 ## Configure Activity TraceState
 ```
-var currentActivity = Activity.Current;            
-if (currentActivity != null)
-{
-    currentActivity.TraceStateString = $"userid=your_user_id";
-}
+Dim currentActivity = Activity.Current
+If currentActivity IsNot Nothing Then
+    ' Use the current activity
+    currentActivity.TraceStateString = "userid=your_user_id"
+End If
 ```
