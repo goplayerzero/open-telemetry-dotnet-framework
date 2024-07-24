@@ -19,6 +19,8 @@ namespace AspdotNet481
         private MeterProvider _meterProvider;
         private ILoggerFactory _loggerFactory;
 
+        private static readonly ActivitySource activitySource = new ActivitySource("My Dataset Name"); //Keep it same as your service name
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -78,7 +80,7 @@ namespace AspdotNet481
             _meterProvider?.Dispose();
             _loggerFactory?.Dispose();
         }
-
+        
         protected void Application_BeginRequest()
         {
             HttpCookie traceIdCookie = HttpContext.Current.Request.Cookies["pz-traceid"];
@@ -88,20 +90,20 @@ namespace AspdotNet481
 
                 // Convert the string traceId to ActivityTraceId
                 ActivityTraceId pzTraceId = ActivityTraceId.CreateFromString(traceId.AsSpan());
+                
+                var spanId = ActivitySpanId.CreateRandom();
 
-                // Get the current activity
-                var currentActivity = Activity.Current;
-                if (currentActivity != null)
-                {
-                    // Set the parent id using the converted ActivityTraceId
-                    currentActivity.SetParentId(pzTraceId, currentActivity.SpanId, currentActivity.ActivityTraceFlags);
-                }               
-            }
-            else
-            {
-                Debug.WriteLine("Trace ID cookie not found.");
-            }
-        }
+                var activityContext = new ActivityContext(pzTraceId, spanId, ActivityTraceFlags.Recorded);
+                
+                Activity.Current.Stop();
 
+                // Create and start the activity
+                var activity = activitySource.StartActivity("CustomActivity", ActivityKind.Server, activityContext);
+                
+                Activity.Current = activity;
+
+                Debug.WriteLine($"Activity started with TraceId: {Activity.Current?.TraceId}");
+            }
+        }        
     }
 }
