@@ -8,14 +8,14 @@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
     <script type="text/javascript"
-            src="https://go.playerzero.app/record/666af2fef6b93a24518cf726"
+            src="https://go.playerzero.app/record/<api_token>"
             async crossorigin></script>
     <script>
-        const userId = "123456789";
+        const userId = "<USER_ID>";
         const metadata = {
-            name: "asp.net user",
-            email: "asp@dotnet.fake",
-            group: "4.8.1"
+            name: "<USER_NAME>",
+            email: "<USER_EMAIL>",
+            group: "<GROUP>"
         };
         const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;
 
@@ -23,7 +23,6 @@
             // PlayerZero has loaded
             window.playerzero.identify(userId, metadata);
             window.playerzero.onTraceChange(setCookie);
-            console.log("PlayerZero has loaded");
         } else {
             // PlayerZero has not loaded, so we'll wait for the ready event
             window.addEventListener(
@@ -31,7 +30,6 @@
               () => {
                   window.playerzero.identify(userId, metadata);
                   window.playerzero.onTraceChange(setCookie);
-                  console.log("PlayerZero has loaded playerzero_ready");
               },
               { once: true }
             );

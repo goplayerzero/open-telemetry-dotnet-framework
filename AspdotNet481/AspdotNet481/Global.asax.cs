@@ -24,11 +24,11 @@ namespace AspdotNet481
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            var serviceName = "p0-aspdotnet-4.8.1";
+            var serviceName = "My Dataset Name";
             var serviceVersion = "1.0.0";
 
             var endPoint = "https://sdk.playerzero.app/otlp";
-            var headers = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true";
+            var headers = "Authorization=Bearer <api_token>,x-pzprod=true";
 
             var resourceBuilder = ResourceBuilder.CreateDefault()
                .AddService(serviceName: serviceName, serviceVersion: serviceVersion);

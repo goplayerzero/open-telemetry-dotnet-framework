@@ -16,10 +16,10 @@ Public Class Global_asax
 
     Public Shared Logger As ILogger(Of Global_asax)
 
-    Dim serviceName = "p0-vbnet-4.8.1"
+    Dim serviceName = "My Dataset Name"
     Dim serviceVersion = "1.0.0"
     Dim endPoint = "https://sdk.playerzero.app/otlp"
-    Dim headers = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true"
+    Dim headers = "Authorization=Bearer <api_token>,x-pzprod=true"
 
     Sub Application_Start(sender As Object, e As EventArgs)
         System.Diagnostics.Debug.WriteLine("Application_Start: Starting OpenTelemetry configuration")
