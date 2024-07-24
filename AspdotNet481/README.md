@@ -111,3 +111,68 @@ if (currentActivity != null)
     currentActivity.TraceStateString = $"userid=your_user_id";
 }
 ```
+
+## Passing Trace Id from UI in Server Sider rending Application
+After you integrated Playerzero into your application by using WebSDK, below change needs to be done to pass Trace Id from UI to backend.
+Generally we need do this in ```Layout.cshtml``` or ```Master.master``` page.
+
+## Embed the PlayerZero Javascript snippet
+```
+<script type="text/javascript"
+            src="https://go.playerzero.app/record/<websdk_token>"
+            async crossorigin></script>
+<script>
+    const userId = "<USER_ID>";
+    const metadata = {
+        name: "<USER_NAME>",
+        email: "<USER_EMAIL>",
+        group: "<GROUP>"
+    };
+    const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;
+
+    if (window.playerzero) {
+        // PlayerZero has loaded
+        window.playerzero.identify(userId, metadata);
+        window.playerzero.onTraceChange(setCookie);
+    } else {
+        // PlayerZero has not loaded, so we'll wait for the ready event
+        window.addEventListener(
+            "playerzero_ready",
+            () => {
+                window.playerzero.identify(userId, metadata);
+                window.playerzero.onTraceChange(setCookie);
+            },
+            { once: true }
+        );
+    }
+</script>
+```
+
+## Read trace id from cookie and SetParentId of Current Activity.
+In ```Global.asax``` file, we need to read the cookie value and set in current activity.
+
+```
+protected void Application_BeginRequest()
+{
+    HttpCookie traceIdCookie = HttpContext.Current.Request.Cookies["pz-traceid"];
+    if (traceIdCookie != null)
+    {
+        string traceId = traceIdCookie.Value;
+
+        // Convert the string traceId to ActivityTraceId
+        ActivityTraceId pzTraceId = ActivityTraceId.CreateFromString(traceId.AsSpan());
+
+        // Get the current activity
+        var currentActivity = Activity.Current;
+        if (currentActivity != null)
+        {
+            // Set the parent id using the converted ActivityTraceId
+            currentActivity.SetParentId(pzTraceId, currentActivity.SpanId, currentActivity.ActivityTraceFlags);
+        }               
+    }
+    else
+    {
+        Debug.WriteLine("Trace ID cookie not found.");
+    }
+}
+```
