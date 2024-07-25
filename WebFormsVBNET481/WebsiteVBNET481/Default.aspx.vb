@@ -19,7 +19,6 @@ Public Class _Default
         Dim currentActivity = Activity.Current
         If currentActivity IsNot Nothing Then
             ' Use the current activity
-            currentActivity.TraceStateString = "userid=1234"
             System.Diagnostics.Debug.WriteLine("CurrentActivity")
 
         Else
@@ -30,5 +29,24 @@ Public Class _Default
         End If
 
 
+    End Sub
+
+    Protected Sub btnLogin_Click(ByVal sender As Object, ByVal e As EventArgs)
+        Dim username As String = txtUsername.Text
+        Dim password As String = txtPassword.Text
+
+        Dim currentActivity = Activity.Current
+
+        Debug.WriteLine($"currentActivity {currentActivity.TraceId}")
+
+        ' Here you would typically validate the credentials against a database or other data source
+        If username = "admin" AndAlso password = "password" Then
+            ' Authentication successful
+            Response.Redirect("About.aspx")
+        Else
+            ' Authentication failed
+            Label1.Text = "Invalid username or password."
+            Global_asax.Logger.LogCritical($"Invalid username or password. {username}")
+        End If
     End Sub
 End Class

@@ -6,6 +6,7 @@ Imports OpenTelemetry.Logs
 Imports OpenTelemetry.Exporter
 Imports Microsoft.Extensions.DependencyInjection
 Imports Microsoft.Extensions.Logging
+Imports System.Diagnostics
 
 Public Class Global_asax
     Inherits HttpApplication
@@ -21,6 +22,8 @@ Public Class Global_asax
     Dim endPoint = "https://sdk.playerzero.app/otlp"
     Dim headers = "Authorization=Bearer <api_token>,x-pzprod=true"
 
+    Private Shared ReadOnly activitySource As New ActivitySource("My Dataset Name")
+
     Sub Application_Start(sender As Object, e As EventArgs)
         System.Diagnostics.Debug.WriteLine("Application_Start: Starting OpenTelemetry configuration")
 
@@ -29,7 +32,8 @@ Public Class Global_asax
             tracerProvider = Sdk.CreateTracerProviderBuilder() _
                 .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(serviceName:=serviceName, serviceVersion:=serviceVersion)) _
                 .AddHttpClientInstrumentation() _
-                .AddSource(serviceName) _
+                .AddAspNetInstrumentation() _
+            .AddSource(serviceName) _
                 .AddConsoleExporter() _
                 .SetSampler(New AlwaysOnSampler()) _
                 .AddOtlpExporter(Function(options)
@@ -61,8 +65,6 @@ Public Class Global_asax
             ' Example logging
             Logger = _serviceProvider.GetRequiredService(Of ILogger(Of Global_asax))()
             Logger.LogInformation("Application Started")
-            Logger.LogError("Logging failed!")
-            Logger.LogCritical("Logging LogCritical!")
 
             System.Diagnostics.Debug.WriteLine("Application_Start: OpenTelemetry configured successfully")
 
@@ -92,5 +94,34 @@ Public Class Global_asax
                                                                                      End Function)
                                                          End Function) _
                                 .SetMinimumLevel(LogLevel.Information))
+    End Sub
+
+    Sub Application_BeginRequest(ByVal sender As Object, ByVal e As EventArgs)
+        Dim traceIdCookie As HttpCookie = HttpContext.Current.Request.Cookies("pz-traceid")
+        If traceIdCookie IsNot Nothing Then
+            Dim traceId As String = traceIdCookie.Value
+
+            ' Convert the string traceId to ActivityTraceId
+            Dim pzTraceId As ActivityTraceId = ActivityTraceId.CreateFromString(traceId.AsSpan())
+
+            Debug.WriteLine($"pzTraceId: {pzTraceId}")
+
+            Dim spanId = ActivitySpanId.CreateRandom()
+
+            Dim ActivityContext = New ActivityContext(pzTraceId, spanId, ActivityTraceFlags.Recorded)
+
+            If Activity.Current IsNot Nothing Then
+                Activity.Current.Stop()
+            End If
+
+            Dim NewActivity = ActivitySource.StartActivity("CustomActivity", ActivityKind.Server, ActivityContext)
+
+            Activity.Current = NewActivity
+
+            Debug.WriteLine($"Activity started with TraceId: {Activity.Current?.TraceId}")
+
+        Else
+            Debug.WriteLine("Trace ID cookie not found.")
+        End If
     End Sub
 End Class

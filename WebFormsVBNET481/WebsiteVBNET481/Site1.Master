@@ -1,0 +1,52 @@
+﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="Site1.master.vb" Inherits="WebsiteVBNET481.Site1" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>My Website</title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <script type="text/javascript"
+        src="https://go.playerzero.app/record/<api_token>"
+        async crossorigin></script>
+    
+    <script type="text/javascript">
+        const userId = "website-vb-user";
+        const metadata = {
+            name: "website-vb-name",
+            email: "website-vb@email.user"
+        };
+        const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;
+
+        if (window.playerzero) {
+            // PlayerZero has loaded
+            window.playerzero.identify(userId, metadata);
+            window.playerzero.onTraceChange(setCookie);
+        } else {
+            // PlayerZero has not loaded, so we'll wait for the ready event
+            window.addEventListener(
+                "playerzero_ready",
+                () => {
+                    window.playerzero.identify(userId, metadata);
+                    window.playerzero.onTraceChange(setCookie);
+                },
+                { once: true }
+            );
+        }
+    </script>
+</head>
+<body>
+     <form id="form1" runat="server">
+        <div>
+            <header>
+                <h1>My Website Header</h1>
+            </header>
+            <asp:ContentPlaceHolder id="MainContent" runat="server" />
+            <footer>
+                <p>My Website Footer</p>
+            </footer>
+        </div>
+    </form>
+</body>
+</html>
