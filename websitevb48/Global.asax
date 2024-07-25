@@ -18,12 +18,12 @@
 
     Public Shared Logger As ILogger(Of global_asax)
 
-    Dim serviceName = "website-only"
+    Dim serviceName = "My Dataset Name"
     Dim serviceVersion = "1.0.0"
     Dim endPoint = "https://sdk.playerzero.app/otlp"
-    Dim headers = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true"
+    Dim headers = "Authorization=Bearer <api_token>,x-pzprod=true"
 
-    Private Shared ReadOnly activitySource As New ActivitySource("website-only")
+    Private Shared ReadOnly activitySource As New ActivitySource("My Dataset Name")
 
     Sub Application_Start(ByVal sender As Object, ByVal e As EventArgs)
         System.Diagnostics.Debug.WriteLine("Application_Start: Starting OpenTelemetry configuration")

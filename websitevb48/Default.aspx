@@ -5,7 +5,7 @@
 <head runat="server">
     <title>Login Page</title>
     <script type="text/javascript"
-        src="https://go.playerzero.app/record/666af2fef6b93a24518cf726"
+        src="https://go.playerzero.app/record/<api_token>"
         async crossorigin></script>
     
     <script type="text/javascript">
