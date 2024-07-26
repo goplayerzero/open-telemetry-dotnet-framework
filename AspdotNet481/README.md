@@ -5,9 +5,14 @@
 
 First, install the following NuGet packages:
 
-- [OpenTelemetry.Instrumentation.AspNet](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AspNet)
-- [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol/)
+- [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry)
 - [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting)
+- [OpenTelemetry.Instrumentation.AspNet](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AspNet)
+- [OpenTelemetry.Instrumentation.Http](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.Http)
+- [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol/)
+- [OpenTelemetry.Instrumentation.SqlClient](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.sqlclient)
+
+
 
 Next, make sure ```Web.Config``` file gets updated with below changes, if not modify your ```Web.Config``` file to add a required HttpModule: 
 
@@ -26,6 +31,9 @@ Next, make sure ```Web.Config``` file gets updated with below changes, if not mo
 Finally, initialize ASP.NET instrumentation in your ```Global.asax.cs``` file along with other OpenTelemetry initialization:
 
 ```
+using System;
+using System.Web.Mvc;
+using System.Web.Routing;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
@@ -33,12 +41,18 @@ using OpenTelemetry.Logs;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Exporter;
+using System.Diagnostics;
+using System.Web;
 
-public class WebApiApplication : HttpApplication
+namespace AspdotNet481
 {
+    public class MvcApplication : System.Web.HttpApplication
+    {
         private TracerProvider _tracerProvider;
         private MeterProvider _meterProvider;
         private ILoggerFactory _loggerFactory;
+
+        private static readonly ActivitySource activitySource = new ActivitySource("My Dataset Name"); //Keep it same as your service name
 
         protected void Application_Start()
         {
@@ -49,7 +63,7 @@ public class WebApiApplication : HttpApplication
             var serviceVersion = "1.0.0";
 
             var endPoint = "https://sdk.playerzero.app/otlp";
-            var headers = "Authorization=Bearer <api_token>,x-pzprod=false";
+            var headers = "Authorization=Bearer <api_token>,x-pzprod=true";
 
             var resourceBuilder = ResourceBuilder.CreateDefault()
                .AddService(serviceName: serviceName, serviceVersion: serviceVersion);
@@ -57,6 +71,9 @@ public class WebApiApplication : HttpApplication
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .SetResourceBuilder(resourceBuilder)
                 .AddAspNetInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddSqlClientInstrumentation(
+                        options => options.SetDbStatement = true)
                 .AddSource(serviceName)
                 .AddOtlpExporter(options =>
                 {
@@ -99,7 +116,33 @@ public class WebApiApplication : HttpApplication
             _meterProvider?.Dispose();
             _loggerFactory?.Dispose();
         }
+        
+        protected void Application_BeginRequest()
+        {
+            HttpCookie traceIdCookie = HttpContext.Current.Request.Cookies["pz-traceid"];
+            if (traceIdCookie != null)
+            {
+                string traceId = traceIdCookie.Value;
+
+                // Convert the string traceId to ActivityTraceId
+                ActivityTraceId pzTraceId = ActivityTraceId.CreateFromString(traceId.AsSpan());
+                
+                var spanId = ActivitySpanId.CreateRandom();
+
+                var activityContext = new ActivityContext(pzTraceId, spanId, ActivityTraceFlags.Recorded);
+                
+                Activity.Current.Stop();
+
+                // Create and start the activity
+                var activity = activitySource.StartActivity("CustomActivity", ActivityKind.Server, activityContext);
+                
+                Activity.Current = activity;
+
+                Debug.WriteLine($"Activity started with TraceId: {Activity.Current?.TraceId}");
+            }
+        }        
     }
+}
 ```
 
 

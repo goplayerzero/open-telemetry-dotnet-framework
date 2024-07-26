@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Player List and Form";
+    var playerList = ViewBag.PlayerList as List<AspdotNet481.Models.PlayerModel>;
+    var playerDetails = ViewBag.PlayerDetails as AspdotNet481.Models.PlayerModel;
+}
+
+
+<h1>Players from SQL Server 2017</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th width="100px">Id</th>
+            <th width="100px">Name</th>
+            <th width="200px">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var player in playerList)
+            {
+            <tr>
+                <td style="padding: 4px">@player.Id</td>
+                <td style="padding: 4px">@player.Name</td>
+                <td style="padding: 4px">@player.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div style="margin-top: 20px">
+    <form action="/Player/GetPlayerDetails" method="post">
+        <label for="playerId">Player ID:</label>
+        <input type="number" id="playerId" name="playerId" required />
+        <button type="submit">Get Player Details</button>
+    </form>
+
+    <div style="margin-top: 10px">
+        <h3>Player Details</h3>
+        <p>
+            <div>@(playerDetails != null ? $"Player id is {playerDetails.Id} and name is {playerDetails.Name}" : "No player details available.")</div>
+        </p>
+    </div>
+</div>

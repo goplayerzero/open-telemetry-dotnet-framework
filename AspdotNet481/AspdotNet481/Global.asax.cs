@@ -38,6 +38,9 @@ namespace AspdotNet481
             _tracerProvider = Sdk.CreateTracerProviderBuilder()
                 .SetResourceBuilder(resourceBuilder)
                 .AddAspNetInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddSqlClientInstrumentation(
+                        options => options.SetDbStatement = true)
                 .AddSource(serviceName)
                 .AddOtlpExporter(options =>
                 {

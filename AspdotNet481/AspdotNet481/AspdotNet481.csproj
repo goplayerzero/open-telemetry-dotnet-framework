@@ -156,6 +156,14 @@
       <HintPath>..\packages\OpenTelemetry.Instrumentation.AspNet.TelemetryHttpModule.1.0.0-rc9\lib\net461\OpenTelemetry.Instrumentation.AspNet.TelemetryHttpModule.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="OpenTelemetry.Instrumentation.Http, Version=1.9.0.41, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTelemetry.Instrumentation.Http.1.9.0\lib\net462\OpenTelemetry.Instrumentation.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenTelemetry.Instrumentation.SqlClient, Version=1.0.0.0, Culture=neutral, PublicKeyToken=7bd6737fe5b67e3c, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTelemetry.Instrumentation.SqlClient.1.0.0-rc9\lib\net461\OpenTelemetry.Instrumentation.SqlClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="StructureMap, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\StructureMap.4.7.1\lib\net45\StructureMap.dll</HintPath>
       <Private>True</Private>
@@ -260,14 +268,18 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AboutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PlayerController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\PlayerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -276,6 +288,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\About\Index.cshtml" />
+    <Content Include="Views\Player\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -285,7 +298,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
     <Folder Include="Views\Base\" />
   </ItemGroup>
   <PropertyGroup>
