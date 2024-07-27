@@ -8,14 +8,14 @@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script src="~/Scripts/modernizr-2.6.2.js"></script>
     <script type="text/javascript"
-            src="https://go.playerzero.app/record/<websdk_token>"
+            src="https://go.playerzero.app/record/<api_token>"
             async crossorigin></script>
     <script>
         const userId = "<USER_ID>";
         const metadata = {
             name: "<USER_NAME>",
             email: "<USER_EMAIL>",
-            group: "<GROUP>"
+            group: "<USER_GROUP"
         };
         const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;
 

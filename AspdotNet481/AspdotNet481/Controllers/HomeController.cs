@@ -67,7 +67,7 @@ namespace AspdotNet481.Controllers
                     _logger.LogError("CurrentActivity is null, trace state string not set.");
                 }
 
-                return RedirectToAction("Index", "About");
+                return RedirectToAction("Index", "Player");
             }
             else
             {
