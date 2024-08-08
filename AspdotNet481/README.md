@@ -219,3 +219,22 @@ protected void Application_BeginRequest()
     }
 }
 ```
+
+
+## Instrumenting SQL Client
+Include below code snippet in your trace provider configurations.
+
+For latest versions (1.9.0-beta.1 or greater)
+```
+.AddSqlClientInstrumentation(options =>
+{
+    options.SetDbStatementForStoredProcedure = true;
+    options.SetDbStatementForText = true;
+})
+```
+
+For Older versions
+```
+.AddSqlClientInstrumentation(
+    options => options.SetDbStatement = true)
+```
