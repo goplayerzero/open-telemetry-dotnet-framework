@@ -25,11 +25,11 @@ namespace AspNetConsole481
 
         static void Main(string[] args)
         {
-            var serviceName = "serilog-console";
+            var serviceName = "My Dataset";
             var serviceVersion = "1.0.0";
 
             var endPoint = "https://sdk.playerzero.app/otlp";
-            var headers = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true";
+            var headers = "Authorization=Bearer <api_token>,x-pzprod=true";
 
             var resourceBuilder = ResourceBuilder.CreateDefault()
                .AddService(serviceName: serviceName, serviceVersion: serviceVersion);
@@ -92,7 +92,7 @@ namespace AspNetConsole481
                 {
                     options.Endpoint = new Uri(endPoint + "/v1/logs").ToString();
                     options.Headers = new Dictionary<string, string> {
-                        ["Authorization"] = "Bearer 666af2fef6b93a24518cf726",
+                        ["Authorization"] = "Bearer <api_token>",
                         ["x-pzprod"] = "true"
                     };
                     options.Protocol = OtlpProtocol.HttpProtobuf;
@@ -144,7 +144,7 @@ namespace AspNetConsole481
 
         static void SimulateUserLogin(UserService userService)
         {
-            string username = "Shrree";
+            string username = "foo";
             string password = "bar";
 
             if (userService.Authenticate(username, password))
