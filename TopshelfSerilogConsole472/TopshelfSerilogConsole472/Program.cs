@@ -24,13 +24,13 @@ namespace TopshelfSerilogConsole472
             var loggerConfig = new LoggerConfiguration()
                                     .ReadFrom.AppSettings()
                                     .Enrich.WithMachineName()
-                                    .WriteTo.File(new LogfmtFormatter(), "logs\\log-.txt");
+                                    .WriteTo.File(new LogfmtFormatter(), "logs\\log.txt");
 
             loggerConfig = PZConfigurations.PZConfigurations.GetInstance.ConfigureSerilogLoggerFactory(loggerConfig);
 
             Log.Logger = loggerConfig.CreateLogger();
 
-            activitySource = new ActivitySource("TopshelfSerilog", "1.0.0");
+            activitySource = new ActivitySource("My Dataset", "1.0.0");
 
             using (var activity = Activity.Current ?? activitySource.StartActivity("Main"))
             {
