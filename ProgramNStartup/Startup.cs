@@ -71,8 +71,6 @@ namespace ProgramNStartup
                     }))
                 .WithMetrics(metrics => metrics
                     .AddMeter(serviceName)
-                    .AddMeter("System.Net.NameResolution")
-                    .AddMeter("System.Net.Http")
                     .AddAspNetCoreInstrumentation()
                     .AddHttpClientInstrumentation()
                     .AddOtlpExporter(options =>
