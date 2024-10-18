@@ -19,9 +19,9 @@ namespace ProgramNStartup
 {
     public class Startup
     {
-        const string serviceName = "startup-program-cs";
+        const string serviceName = "My Dataset";
         const string otelEndpoint = "https://sdk.playerzero.app/otlp";
-        const string otelHeaders = "Authorization=Bearer 666af2fef6b93a24518cf726,x-pzprod=true";
+        const string otelHeaders = "Authorization=Bearer <api_token>,x-pzprod=false";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -29,7 +29,6 @@ namespace ProgramNStartup
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -44,7 +43,6 @@ namespace ProgramNStartup
                     options.SetResourceBuilder(
                         ResourceBuilder.CreateDefault()
                             .AddService(serviceName));
-                    options.AddConsoleExporter();
                     options.AddOtlpExporter(o =>
                     {
                         o.Endpoint = new Uri(otelEndpoint + "/v1/logs");
@@ -70,8 +68,7 @@ namespace ProgramNStartup
                         options.Endpoint = new Uri(otelEndpoint + "/v1/traces");
                         options.Headers = otelHeaders;
                         options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    })
-                    .AddConsoleExporter())
+                    }))
                 .WithMetrics(metrics => metrics
                     .AddMeter(serviceName)
                     .AddMeter("System.Net.NameResolution")
@@ -83,11 +80,9 @@ namespace ProgramNStartup
                         options.Endpoint = new Uri(otelEndpoint + "/v1/metrics");
                         options.Headers = otelHeaders;
                         options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    })
-                    .AddConsoleExporter());
+                    }));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
