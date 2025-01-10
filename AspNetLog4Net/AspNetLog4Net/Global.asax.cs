@@ -23,7 +23,7 @@ namespace AspNetLog4Net
         private MeterProvider _meterProvider;
         private ILoggerFactory _loggerFactory;
 
-        private static readonly ActivitySource activitySource = new ActivitySource("log4net"); //Keep it same as your service name
+        private static readonly ActivitySource activitySource = new ActivitySource("My Dataset Name"); //Keep it same as your service name
 
         protected void Application_Start()
         {
@@ -32,11 +32,11 @@ namespace AspNetLog4Net
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             
-            var serviceName = "log4net";
+            var serviceName = "My Dataset Name";
             var serviceVersion = "1.0.0";
 
             var endPoint = "https://sdk.playerzero.app/otlp";
-            var headers = "Authorization=Bearer 666af2fef6b93a24518cf726" +
+            var headers = "Authorization=Bearer <api_token>" +
                 ",x-pzprod=true";
 
             var resourceBuilder = ResourceBuilder.CreateDefault()

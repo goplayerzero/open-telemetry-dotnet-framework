@@ -7,14 +7,14 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     <script type="text/javascript"
-            src="https://go.playerzero.app/record/666af2fef6b93a24518cf726"
+            src="https://go.playerzero.app/record/<api_token>"
             async crossorigin></script>
     <script>
-        const userId = "kamlesh@log4net.ai";
+        const userId = "USER_ID";
         const metadata = {
-            name: "Log 4 Net",
-            email: "kamlesh@log4net.ai",
-            group: "log4net"
+            name: "USER_NAME",
+            email: "USER_EMAIL",
+            group: "GROUP"
         };
         const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;
 
