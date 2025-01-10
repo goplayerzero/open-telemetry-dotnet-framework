@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script type="text/javascript"
+            src="https://go.playerzero.app/record/666af2fef6b93a24518cf726"
+            async crossorigin></script>
+    <script>
+        const userId = "kamlesh@log4net.ai";
+        const metadata = {
+            name: "Log 4 Net",
+            email: "kamlesh@log4net.ai",
+            group: "log4net"
+        };
+        const setCookie = (t) => document.cookie = `pz-traceid=${t}; Path=/;`;
+
+        if (window.playerzero) {
+            // PlayerZero has loaded
+            window.playerzero.identify(userId, metadata);
+            window.playerzero.onTraceChange(setCookie);
+        } else {
+            // PlayerZero has not loaded, so we'll wait for the ready event
+            window.addEventListener(
+              "playerzero_ready",
+              () => {
+                  window.playerzero.identify(userId, metadata);
+                  window.playerzero.onTraceChange(setCookie);
+              },
+              { once: true }
+            );
+        }
+    </script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
