@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    @using (Html.BeginForm("Login", "Home", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" />
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" />
+        </div>
+        <div>
+            <input type="submit" value="Login" />
+        </div>
+
+        <div style="margin-top: 20px">
+            <a href="@Url.Action("Index", "Player")" class="btn btn-primary">Go to Player Page</a>
+        </div>
+
+    }
+</div>
+
+<div id="userDetails" style="margin-top: 30px;">
+    Loading user details...
+</div>
+<script>// Make the API call when the page loads
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('https://reqres.in/api/users/1')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const user = data.data; // Extract user details from API response
+                const userDetailsDiv = document.getElementById('userDetails');
+
+                // Render user details
+                userDetailsDiv.innerHTML = `
+                    <h3>User Details:</h3>
+                    <p><strong>Name:</strong> ${user.first_name} ${user.last_name}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <img src="${user.avatar}" alt="${user.first_name}" style="border-radius: 50%; width: 100px; height: 100px;" />
+                `;
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+                document.getElementById('userDetails').textContent = 'Failed to load user details.';
+            });
+    });</script>
