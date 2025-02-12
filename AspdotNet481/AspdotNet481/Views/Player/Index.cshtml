@@ -40,4 +40,68 @@
             <div>@(playerDetails != null ? $"Player id is {playerDetails.Id} and name is {playerDetails.Name}" : "No player details available.")</div>
         </p>
     </div>
+
+    <div>
+        <h1>Enter a Player ID to fetch user details from API</h1>
+        <input type="number" id="apiPlayerId" name="playerId" required />
+        <button type="button" id="fetchPlayerBtn">Get Player Details</button>
+    </div>
+
+    <div id="userDetails" style="margin-top: 30px;">
+    </div>
 </div>
+
+<script>
+// Function to fetch user details based on the input ID
+    function fetchUserDetails(playerId) {
+        const apiUrl = `https://reqres.in/api/users/${playerId}`;
+        const userDetailsDiv = document.getElementById('userDetails');
+
+        userDetailsDiv.textContent = 'Loading user details...'; // Show loading message
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const user = data.data; // Extract user details
+                // Update the UI with user details
+                userDetailsDiv.innerHTML = `
+                    <h3>User Details:</h3>
+                    <p><strong>Name:</strong> ${user.first_name} ${user.last_name}</p>
+                    <p><strong>Email:</strong> ${user.email}</p>
+                    <img src="${user.avatar}" alt="${user.first_name}" style="border-radius: 50%; width: 100px; height: 100px;" />
+                `;
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+                userDetailsDiv.textContent = 'Failed to load user details. Please check the Player ID.';
+            });
+    }
+
+    // Add event listeners
+    document.addEventListener("DOMContentLoaded", function () {
+        const playerIdInput = document.getElementById('apiPlayerId');
+        const fetchPlayerBtn = document.getElementById('fetchPlayerBtn');
+
+        // Call API when the button is clicked
+        fetchPlayerBtn.addEventListener('click', function () {
+            const playerId = playerIdInput.value.trim();
+            if (playerId) {
+                fetchUserDetails(playerId);
+            } else {
+                alert('Please enter a valid Player ID');
+            }
+        });
+
+        // Optionally, fetch data dynamically on input change
+        playerIdInput.addEventListener('change', function () {
+            const playerId = playerIdInput.value.trim();
+            if (playerId) {
+                fetchUserDetails(playerId);
+            }
+        });
+    });</script>

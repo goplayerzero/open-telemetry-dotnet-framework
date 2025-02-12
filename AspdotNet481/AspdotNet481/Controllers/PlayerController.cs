@@ -6,15 +6,20 @@ using System.Data.SqlClient;
 using System.Web.Mvc;
 using System.Diagnostics;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace AspdotNet481.Controllers
 {
     public class PlayerController : Controller
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["P0SQLConnection"].ConnectionString;
-
+        
         public List<PlayerModel> GetPlayerListFromDb()
         {
+            var _logger = TelemetryService.CreateLogger("PlayerController");
+
+            _logger.LogError("GetPlayerListFromDb");
+
             List<PlayerModel> players = new List<PlayerModel>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -45,75 +50,82 @@ namespace AspdotNet481.Controllers
 
         public PlayerModel GetPlayerDetailsFromDb(int id)
         {
+            var _logger = TelemetryService.CreateLogger("PlayerController");
+
             if (id <= 0)
+            {
                 throw new ArgumentException("ID must be a positive integer.", nameof(id));
+            }
+                
 
             PlayerModel player = null;
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                var storeProcName = id > 10 ? "NotFoundQuery" : "GetPlayerDetails";
-
-                Debug.WriteLine($"Current Trace ID {Activity.Current.TraceId}");
-
-                using (SqlCommand command = new SqlCommand(storeProcName, connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@PlayerId", id);
-
-                    connection.Open();
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            player = new PlayerModel
-                            {
-                                Id = (int)reader["id"],
-                                Name = reader["name"].ToString(),
-                                Description = reader["description"].ToString()
-                            };
-                        }
-                    }
-                }
-            }
-
-            //try
+            //using (SqlConnection connection = new SqlConnection(connectionString))
             //{
-            //    using (SqlConnection connection = new SqlConnection(connectionString))
+            //    var storeProcName = id > 10 ? "NotFoundQuery" : "GetPlayerDetails";
+
+            //    Debug.WriteLine($"Current Trace ID {Activity.Current.TraceId}");
+
+            //    using (SqlCommand command = new SqlCommand(storeProcName, connection))
             //    {
-            //        var storeProcName = id > 10 ? "NotFoundQuery" : "GetPlayerDetails";
+            //        command.CommandType = CommandType.StoredProcedure;
+            //        command.Parameters.AddWithValue("@PlayerId", id);
 
-            //        Debug.WriteLine($"Current Trace ID {Activity.Current.TraceId}");
-
-            //        using (SqlCommand command = new SqlCommand(storeProcName, connection))
+            //        connection.Open();
+            //        using (SqlDataReader reader = command.ExecuteReader())
             //        {
-            //            command.CommandType = CommandType.StoredProcedure;
-            //            command.Parameters.AddWithValue("@PlayerId", id);
-
-            //            connection.Open();
-            //            using (SqlDataReader reader = command.ExecuteReader())
+            //            if (reader.Read())
             //            {
-            //                if (reader.Read())
+            //                player = new PlayerModel
             //                {
-            //                    player = new PlayerModel
-            //                    {
-            //                        Id = (int)reader["id"],
-            //                        Name = reader["name"].ToString(),
-            //                        Description = reader["description"].ToString()
-            //                    };
-            //                }
+            //                    Id = (int)reader["id"],
+            //                    Name = reader["name"].ToString(),
+            //                    Description = reader["description"].ToString()
+            //                };
             //            }
             //        }
             //    }
             //}
-            //catch (SqlException sqlEx)
-            //{
-            //    Debug.WriteLine($"SQL Exception: {sqlEx.Message}");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.WriteLine($"Exception: {ex.Message}");
-            //}            
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    var storeProcName = id > 10 ? "NotFoundQuery" : "GetPlayerDetails";
+
+                    Debug.WriteLine($"Current Trace ID {Activity.Current.TraceId}");
+
+                    using (SqlCommand command = new SqlCommand(storeProcName, connection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@PlayerId", id);
+
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                player = new PlayerModel
+                                {
+                                    Id = (int)reader["id"],
+                                    Name = reader["name"].ToString(),
+                                    Description = reader["description"].ToString()
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                _logger.LogError($"SQL Exception: {sqlEx.Message}");
+                Debug.WriteLine($"SQL Exception: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception: {ex.Message}");
+                Debug.WriteLine($"Exception: {ex.Message}");
+            }
 
             return player;
         }
