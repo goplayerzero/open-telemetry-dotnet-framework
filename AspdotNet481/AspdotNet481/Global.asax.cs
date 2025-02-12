@@ -8,14 +8,14 @@ namespace AspdotNet481
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static readonly ActivitySource activitySource = new ActivitySource("12TelemetryService"); //Keep it same as your service name
+        private static readonly ActivitySource activitySource = new ActivitySource("My Dataset Name"); //Keep it same as your service name
 
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            TelemetryService.Initialize("12TelemetryService", "666af2fef6b93a24518cf726", true);                       
+            TelemetryService.Initialize("My Dataset Name", "<api_token>", true);                       
 
         }
 
