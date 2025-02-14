@@ -11,14 +11,14 @@ namespace PlayerzeroOtelExample
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static readonly ActivitySource activitySource = new ActivitySource("PzOtelExample");
+        private static readonly ActivitySource activitySource = new ActivitySource("<SERVICE_NAME>");
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             
-            TelemetryService.Initialize("PzOtelExample", "666af2fef6b93a24518cf726", true);
+            TelemetryService.Initialize("<SERVICE_NAME>", "<API_TOKEN>", true); // Service Name, Token, PzProd
         }
         
         protected void Application_End()
